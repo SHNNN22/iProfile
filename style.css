@@ -1,0 +1,46 @@
+html,
+body {
+  background: rgba(51, 51, 51, 1);
+  color: rgba(222, 222, 222, 1);
+  font-family: arial;
+  font-size: 14px;
+  margin: 0;
+  padding: 10px;
+}
+
+span,
+strong {
+  color: rgba(222, 222, 222, 1);
+  font-family: arial;
+  font-size: 15px;
+  font-variant: small-caps;
+  font-weight: normal;
+  padding: 0 10px;
+}
+
+input {
+  padding: 5px;
+}
+
+canvas {
+  display: block;
+}
+
+#top {
+  left: 0;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+}
+
+#calculator {
+  left: 318px;
+  padding-top: 29px;
+  position: fixed;
+  text-align: right;
+  z-index: 2;
+}
+
+#calculator input {
+  display: block;
+}
