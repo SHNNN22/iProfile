@@ -1,5 +1,4 @@
 // GLOBALS
-//const topDiv = document.querySelector('#topDiv')
 let canvas
 let unitsBar
 let totalLength
@@ -37,13 +36,13 @@ function setup() {
   // infos
   textBox = createInput('');
   textBox.attribute('placeholder', '15000')
-	textBox.attribute('oninput', 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength)')
+  textBox.attribute('oninput', 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength)')
   textBox.attribute('type', 'number')
-	textBox.attribute('step', '280')
-	textBox.attribute('min', '0')
-	textBox.attribute('maxlength', '5')
-	textBox.attribute('id', 'focus')
-	document.getElementById("focus").autofocus = true
+  textBox.attribute('step', '280')
+  textBox.attribute('min', '0')
+  textBox.attribute('maxlength', '5')
+  textBox.attribute('id', 'focus')
+  document.getElementById("focus").autofocus = true
   textBox.parent(topDiv)
   let insert = createElement('strong', 'insert distance')
   insert.parent(topDiv)
@@ -56,7 +55,7 @@ function setup() {
   pan = createSlider(-1500, 0, 0)
   createElement('strong', 'pan')
 
-	// calculator
+  // calculator
   plus = createButton('+').parent('#calculator')
   minus = createButton('-').parent('#calculator')
   times = createButton('*').parent('#calculator')
@@ -96,6 +95,7 @@ function div() {
   result = a / b
   para.html(result)
 }
+
 // WINDOW RESIZED
 function windowResized() {
   resizeCanvas(windowWidth, 350)
@@ -179,22 +179,22 @@ function draw() {
   for (let i = 0; i < module10Num; i++) {
     textSize(1 * sliderLength)
 
-		push()
+    push()
     stroke(0)
     fill(71, 115, 137)
     let modL = rect(i * (sliderLength * 10) + pan.value(), y - h, sliderLength * 8, h)
-		pop()
+    pop()
 
     noStroke()
     fill(0, 0, 0)
     text(`${i+1}
 		224`, i * (sliderLength * 10) + pan.value() + 4, y - h + 20);
 
-		push()
+    push()
     stroke(0)
     fill(237, 255, 171)
     let modc = rect((i * (sliderLength * 10) + pan.value()) + (sliderLength * 8), y - h, sliderLength * 2, h)
-		pop()
+    pop()
 
     text(`${i+1}
 56`, (i * (sliderLength * 10) + pan.value()) + (sliderLength * 8) + 4, y - h + 20)
@@ -213,13 +213,13 @@ function draw() {
       text(`1
 	168`, xx + 4, y - h + 20)
 
-			if(profileLength>=2800){
-				push()
-				strokeWeight(4)
-	      stroke(255, 255, 255)
-	      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-				pop()
-			}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
 
       stroke(0)
       fill(211, 249, 175)
@@ -240,43 +240,43 @@ function draw() {
       text(`1
 	224`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 7:
       fill(162, 227, 193)
       shortMod = rect(xx, y - h, 4 * sliderLength, h)
 
-			push()
+      push()
       noStroke()
       fill(0, 0, 0)
       text(`1
 	112`, xx + 4, y - h + 20)
-			pop()
-
-			if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
       pop()
-}
+
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
 
       fill(211, 249, 175)
       shortMod = rect(xx + 4 * sliderLength, y - h, 3 * sliderLength, h)
 
-			push()
+      push()
       noStroke()
       fill(0, 0, 0)
       text(`1
 	84`, xx + 4 * sliderLength + 4, y - h + 20)
-			pop()
+      pop()
       break
 
     case 6:
@@ -288,13 +288,13 @@ function draw() {
       text(`1
 	168`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 5:
@@ -306,13 +306,13 @@ function draw() {
       text(`1
 	140`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 4:
@@ -324,13 +324,13 @@ function draw() {
       text(`1
 	112`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 3:
@@ -342,13 +342,13 @@ function draw() {
       text(`1
 	84`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 2:
@@ -360,13 +360,13 @@ function draw() {
       text(`1
 56`, xx + 4, y - h + 20)
 
-if(profileLength>=2800){
-			push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-			pop()
-		}
+      if (profileLength >= 2800) {
+        push()
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
 
     case 1:
@@ -381,12 +381,12 @@ if(profileLength>=2800){
       text(`1
 	84`, xx + 4, y - h + 20)
 
-	if(profileLength>=2800){
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(xx, y - h * .666, xx, y - h / 3.5)
-      pop()
-		}
+      if (profileLength >= 2800) {
+        strokeWeight(4)
+        stroke(255, 255, 255)
+        connector = line(xx, y - h * .666, xx, y - h / 3.5)
+        pop()
+      }
       break
   }
 
@@ -395,7 +395,7 @@ if(profileLength>=2800){
   stroke(0)
   unitsBar = rect(x + pan.value(), y, totalLength / shrink.value(), h / 2)
 
-  //single modules
+  // single modules
   fill(100)
   for (let i = 0; i < modulesNum(); i++) {
     singleModule = rect(i * sliderLength + pan.value(), y, sliderLength, h / 2)
@@ -410,8 +410,8 @@ if(profileLength>=2800){
     let mod8M = rect(i * sliderLength * 8 + pan.value(), y + h / 2, sliderLength * 8, h)
     pop()
 
-		noStroke()
-		fill(0)
+    noStroke()
+    fill(0)
     textSize(1 * sliderLength)
     text(`${i+ 1}
 		224`, i * sliderLength * 8 + 4 + pan.value(), y + h - 10)
@@ -496,15 +496,15 @@ if(profileLength>=2800){
     }
   }
 
-	// connectors lines 3m - less price
-		for (let i = 1; i <= connectors2; i++) {
+  // connectors lines 3m - less price
+  for (let i = 1; i <= connectors2; i++) {
 
-			push()
-			strokeWeight(4)
-			stroke(255, 255, 255)
-			connector = line(i * sliderLength * 8 + pan.value(), y + h * .8, i * sliderLength * 8 + pan.value(), y + h / .8)
-			pop()
-		}
+    push()
+    strokeWeight(4)
+    stroke(255, 255, 255)
+    connector = line(i * sliderLength * 8 + pan.value(), y + h * .8, i * sliderLength * 8 + pan.value(), y + h / .8)
+    pop()
+  }
 
 
 }

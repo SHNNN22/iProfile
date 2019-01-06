@@ -26,13 +26,6 @@ canvas {
   display: block;
 }
 
-#top {
-  left: 0;
-  padding: 20px;
-  position: fixed;
-  top: 0;
-}
-
 #calculator {
 top: 22px;
 right: 22px;
