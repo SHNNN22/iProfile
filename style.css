@@ -5,7 +5,6 @@ body {
   font-family: arial;
   font-size: 14px;
   margin: 0;
-  overflow-x: hidden;
   padding: 10px;
 }
 
@@ -35,11 +34,9 @@ canvas {
 }
 
 #calculator {
-  left: 318px;
-  padding-top: 29px;
-  position: fixed;
-  text-align: right;
-  z-index: 2;
+top: 22px;
+right: 22px;
+position: absolute;
 }
 
 #calculator input {
