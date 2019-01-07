@@ -23,7 +23,7 @@ ul {
 }
 
 input {
-  padding: 5px;
+  max-height: 15px;
 }
 
 canvas {
