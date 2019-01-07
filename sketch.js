@@ -65,6 +65,15 @@ function setup() {
   times.mousePressed(mul)
   divis.mousePressed(div)
   para = createP('0').parent('#calculator')
+  
+  // Note
+  noteInput = createInput('').parent('#footer').attribute('placeholder', 'Take a note')
+  note = createElement('ul').parent('#footer')
+  noteInput.changed(changeNote);
+}
+
+function changeNote() {
+  li = createElement('li', noteInput.value()).parent(note)
 }
 
 function setVal() {
