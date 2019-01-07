@@ -18,6 +18,10 @@ strong {
   padding: 0 10px;
 }
 
+ul {
+  margin: 0;
+}
+
 input {
   padding: 5px;
 }
@@ -34,4 +38,10 @@ position: absolute;
 
 #calculator input {
   display: block;
+}
+
+#footer {
+  display: flex;
+  position: absolute;
+  top: 500px;
 }
