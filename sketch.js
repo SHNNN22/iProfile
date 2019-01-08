@@ -176,7 +176,7 @@ function draw() {
   if (profileLength > 2240 && profileLength < 3080) {
     text(`180Corner: ${connectors2}    •    SRL TR clips: ${clips}    •    SRL 85 / MIC 60 clips: ${clips-2}`, x, y + h * 1.8)
   } else if ((modulesNum() - (mod8Num * 8)) == 1) {
-    text(`180Corner: ${connectors2}    •    Clips: ${clips - 3}`, x, y + h * 1.8)
+    text(`180Corner: ${connectors2}    •    Clips: ${clips - 2}`, x, y + h * 1.8)
   } else {
     text(`180Corner: ${connectors2}    •    Clips: ${clips}`, x, y + h * 1.8)
   }
