@@ -131,8 +131,9 @@ function draw() {
   let profileLength = modulesNum() * 280
   text(`Profile length: ${profileLength} mm`, x, 40)
 
+  text(`Profile length with end caps: ${profileLength + 10} mm`, x, 60)
   let leftover = totalLength - profileLength
-  text(`Leftover: ${leftover} mm`, x, 60)
+  text(`Leftover: ${leftover} mm`, x, 80)
 
   // Connectors 3m - less cuts
   if (totalLength < 3080) {
