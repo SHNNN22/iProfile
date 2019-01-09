@@ -171,19 +171,25 @@ function draw() {
   }
 
   // Clips
-  if (profileLength % 2240 == 0) {
+  if (profileLength % 2240 == 0 && profileLength % 2240 <= 560) {
     clips = mod8Num * 3
-  } else {
+  } else if (profileLength % 2240 > 560) {
     clips = mod8Num * 3 + 2
+  } 
+
+  if (profileLength % 2240 == 0) {
+    clipsTR = mod8Num * 4
+  } else if (profileLength % 2240 == 280) {
+    clipsTR = mod8Num * 4 + 1
+  } else if (profileLength % 2240 >= 560 && profileLength % 2240 <= 1120) {
+    clipsTR = mod8Num * 4 + 2
+  } else if (profileLength % 2240 > 1120 && profileLength % 2240 < 1960) {
+    clipsTR = mod8Num * 4 + 3
+  } else if (profileLength % 2240 >= 1960) {
+    clipsTR = mod8Num * 4 + 4
   }
 
-  if (profileLength > 2240 && profileLength < 3080) {
-    text(`180Corner: ${connectors2}    •    SRL TR clips: ${clips}    •    SRL 85 / MIC 60 clips: ${clips-2}`, x, y + h * 1.8)
-  } else if ((modulesNum() - (mod8Num * 8)) == 1) {
-    text(`180Corner: ${connectors2}    •    Clips: ${clips - 2}`, x, y + h * 1.8)
-  } else {
-    text(`180Corner: ${connectors2}    •    Clips: ${clips}`, x, y + h * 1.8)
-  }
+  text(`180Corner: ${connectors2}    •    SRL TR clips: ${clipsTR}    •    SRL 85 / MIC 60 clips: ${clips}`, x, y + h * 1.8)
 
   // Long modules 3m - less cuts
   module10Num = Math.floor(profileLength / max3m)
