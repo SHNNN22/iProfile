@@ -147,12 +147,16 @@ function draw() {
   }
 
   // Suspension 3m - less cuts
-  if (modulesNum() < 7) {
-    suspensions = 2
-  } else if (profileLength % max3m == 0) {
-    suspensions = module10Num * 3
+  if (p.modulesNum() >= 8) {
+    if (p.profileLength % p.max3m == 0) {
+      p.suspensions = p.module10Num * 3
+    } else if (p.profileLength % p.max3m >= 280 && p.profileLength % p.max3m <= 1960) {
+      p.suspensions = p.module10Num * 3 + 2
+    } else if (p.profileLength % p.max3m > 1960) {
+      p.suspensions = p.module10Num * 3 + 3
+    }
   } else {
-    suspensions = module10Num * 3 + 2
+    p.suspensions = 2
   }
 
   text(`180Corner: ${connectors}    •    Suspensions: ${suspensions}`, x, y - h - 10)
