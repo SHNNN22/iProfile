@@ -11,24 +11,23 @@
 	<script src="libraries/p5.js"></script>
 	<script src="libraries/p5.dom.js"></script>
 	<script src="sketch.js"></script>
-
 </head>
 
 <body>
 
 	<navbar>
-		<button class="w3-bar-item w3-button tablink activeTab" onclick="openTab(event,'p3m')">p3m</button>
-		<button class="w3-bar-item w3-button tablink" onclick="openTab(event,'p6m')">p6m</button>
+		<button class="tablink activeTab" onclick="openTab(event,'p3m')">p3m</button>
+		<button class="tablink" onclick="openTab(event,'p6m')">p6m</button>
 
 	</navbar>
 	<main id="main">
 		<div id="topDiv"></div>
 
-		<div id="p3m" class="w3-container w3-border tab">
+		<div id="p3m" class="tab">
 			<div id="sketch1"></div>
 		</div>
 
-		<div id="p6m" class="w3-container w3-border tab" style="display:none">
+		<div id="p6m" class="tab" style="display:none">
 			<div id="sketch2"></div>
 		</div>
 	</main>
