@@ -1,23 +1,55 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="style.css">
 	<title>iProfileBETA</title>
 
 	<script src="libraries/p5.js"></script>
 	<script src="libraries/p5.dom.js"></script>
-	<script src="libraries/p5.sound.js"></script>
 	<script src="sketch.js"></script>
 
 </head>
+
 <body>
-	<div id="topDiv"></div>
-	<div id="calculator">
-	    <input type="text" id="a">
-	    <input type="text" id="b">
-	  </div>
+
+	<navbar>
+		<button class="w3-bar-item w3-button tablink activeTab" onclick="openTab(event,'p3m')">p3m</button>
+		<button class="w3-bar-item w3-button tablink" onclick="openTab(event,'p6m')">p6m</button>
+
+	</navbar>
+	<main id="main">
+		<div id="topDiv"></div>
+
+		<div id="p3m" class="w3-container w3-border tab">
+			<div id="sketch1"></div>
+		</div>
+
+		<div id="p6m" class="w3-container w3-border tab" style="display:none">
+			<div id="sketch2"></div>
+		</div>
+	</main>
+
+	<footer id="footer"></footer>
+
+	<script>
+		function openTab(evt, tabName) {
+			var i, x, tablinks;
+			x = document.getElementsByClassName("tab");
+			for (i = 0; i < x.length; i++) {
+				x[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablink");
+			for (i = 0; i < x.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" activeTab", "");
+			}
+			document.getElementById(tabName).style.display = "block";
+			evt.currentTarget.className += " activeTab";
+		}
+	</script>
 </body>
+
 </html>

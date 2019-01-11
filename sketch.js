@@ -1,537 +1,1473 @@
-// GLOBALS
-let canvas
-let unitsBar
-let totalLength
-const moduleLength = 280
-let singleModule
-const x = 0
-const y = 230
-const h = 55
-let mod8Num
-let restModule
-let textBox
-let shrink
-let pan
+var sketch1 = function(p) {
+  // GLOBALS
+  p.canvas
+  p.unitsBar
+  p.totalLength
+  p.moduleLength = 280
+  p.singleModule
+  p.x = 0
+  p.y = 230
+  p.h = 55
+  p.mod8Num
+  p.restModule
+  p.textBox
+  p.shrink
+  p.pan
 
-let connectors
-let suspensions
-let clips
+  p.connectors
+  p.suspensions
+  p.clips
 
-let module10Num
-let shortBruto
-let shortNet
+  p.module10Num
+  p.shortBruto
+  p.shortNet
 
-const max3m = 2800
-let unitsAmount
-let shortMod
+  p.max3m = 2800
+  p.unitsAmount
+  p.shortMod
 
-let a, b, result
+  p.a
+  p.b
+  p.result
 
 
 
-//SETUP
-function setup() {
-  canvas = createCanvas(windowWidth, 350)
-  output = createP(' ')
-  // infos
-  textBox = createInput('');
-  textBox.attribute('placeholder', '15000')
-  textBox.attribute('oninput', 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength)')
-  textBox.attribute('type', 'number')
-  textBox.attribute('step', '280')
-  textBox.attribute('min', '0')
-  textBox.attribute('maxlength', '5')
-  textBox.attribute('id', 'focus')
-  document.getElementById("focus").autofocus = true
-  textBox.parent(topDiv)
-  let insert = createElement('strong', 'insert distance')
-  insert.parent(topDiv)
+  //SETUP
+  p.setup = function() {
+    textBox = p.createInput('')
+    calculator = p.createDiv('').attribute('id', 'calculator')
+    inputA = p.createInput('').parent('#calculator').attribute('id', 'a')
+    inputB = p.createInput('').parent('#calculator').attribute('id', 'b')
 
-  // shrink
-  createElement('strong', 'shrink')
-  shrink = createSlider(22, 100, 22)
+    canvas = p.createCanvas(p.windowWidth, 350)
+    canvas.parent('#sketch1')
 
-  // pan
-  pan = createSlider(-1500, 0, 0)
-  createElement('strong', 'pan')
+    output = p.createP(' ')
+    // infos
+    textBox.attribute('placeholder', '15000')
+    textBox.attribute('oninput', 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength)')
+    textBox.attribute('type', 'number')
+    textBox.attribute('step', '280')
+    textBox.attribute('min', '0')
+    textBox.attribute('maxlength', '5')
+    textBox.attribute('id', 'focus')
+    document.getElementById("focus").autofocus = true
+    textBox.parent(topDiv)
 
-  // calculator
-  plus = createButton('+').parent('#calculator')
-  minus = createButton('-').parent('#calculator')
-  times = createButton('*').parent('#calculator')
-  divis = createButton('/').parent('#calculator')
-  plus.mousePressed(sum)
-  minus.mousePressed(sub)
-  times.mousePressed(mul)
-  divis.mousePressed(div)
-  para = createP('0').parent('#calculator')
-}
 
-function setVal() {
-  a = Number(document.getElementById('a').value)
-  b = Number(document.getElementById('b').value)
-}
+    // shrink
+    p.createElement('strong', 'shrink').parent('#p3m')
+    p.shrink = p.createSlider(22, 100, 22).parent('#p3m')
 
-function sum() {
-  setVal()
-  result = a + b
-  para.html(result)
-}
+    // pan
+    p.pan = p.createSlider(-1500, 0, 0).parent('#p3m')
+    p.createElement('strong', 'pan').parent('#p3m')
 
-function sub() {
-  setVal()
-  result = a - b
-  para.html(result)
-}
+    // calculator
+    p.plus = p.createButton('+').parent('#calculator')
+    p.minus = p.createButton('-').parent('#calculator')
+    p.times = p.createButton('*').parent('#calculator')
+    p.divis = p.createButton('/').parent('#calculator')
+    p.plus.mousePressed(sum)
+    p.minus.mousePressed(sub)
+    p.times.mousePressed(mul)
+    p.divis.mousePressed(div)
+    p.para = p.createP('0').parent('#calculator')
 
-function mul() {
-  setVal()
-  result = a * b
-  para.html(result)
-}
-
-function div() {
-  setVal()
-  result = a / b
-  para.html(result)
-}
-
-// WINDOW RESIZED
-function windowResized() {
-  resizeCanvas(windowWidth, 350)
-}
-
-// Find total number of single modules
-function modulesNum() {
-  let unitNum = totalLength / moduleLength
-  return int(unitNum)
-}
-
-// DRAW
-function draw() {
-  background(51)
-
-  sliderLength = moduleLength / shrink.value()
-  totalLength = textBox.value()
-
-  //texts
-  textSize(12)
-  fill(222)
-  noStroke()
-  text(`Total length: ${totalLength} mm`, x, 20)
-  let profileLength = modulesNum() * 280
-  text(`Profile length: ${profileLength} mm`, x, 40)
-
-  let leftover = totalLength - profileLength
-  text(`Leftover: ${leftover} mm`, x, 60)
-
-  // Connectors 3m - less cuts
-  if (totalLength < 3080) {
-    connectors = 0
-  } else if (profileLength >= 3080 && profileLength < 5880) {
-    connectors = 1
-  } else if (profileLength % max3m == 0) {
-    connectors = Math.floor(profileLength / max3m) - 1
-  } else {
-    connectors = Math.floor(profileLength / max3m)
+    // Note
+    noteInput = p.createInput('').parent('#footer').attribute('placeholder', 'Take a note')
+    note = p.createElement('ul').parent('#footer')
+    noteInput.changed(changeNote);
   }
 
-  // Suspension 3m - less cuts
-  if (modulesNum() < 7) {
-    suspensions = 2
-  } else if (profileLength % max3m == 0) {
-    suspensions = module10Num * 3
-  } else {
-    suspensions = module10Num * 3 + 2
+  function changeNote() {
+    li = p.createElement('li', noteInput.value()).parent(note)
   }
 
-  text(`180Corner: ${connectors}    •    Suspensions: ${suspensions}`, x, y - h - 10)
-
-  // Connectors 3m - less price
-  if (profileLength < 3080) {
-    connectors2 = 0
-  } else if (profileLength % 2240 == 0 || profileLength % 2240 == 280) {
-    connectors2 = mod8Num - 1
-  } else {
-    connectors2 = mod8Num
+  p.setVal = function() {
+    p.a = Number(inputA.value())
+    p.b = Number(inputB.value())
   }
 
-  // Clips
-  if (profileLength % 2240 == 0) {
-    clips = mod8Num * 3
-  } else {
-    clips = mod8Num * 3 + 2
+  function sum() {
+    p.setVal()
+    p.result = p.a + p.b
+    p.para.html(p.result)
   }
 
-  if (profileLength > 2240 && profileLength < 3080) {
-    text(`180Corner: ${connectors2}    •    SRL TR clips: ${clips}    •    SRL 85 / MIC 60 clips: ${clips-2}`, x, y + h * 1.8)
-  } else if ((modulesNum() - (mod8Num * 8)) == 1) {
-    text(`180Corner: ${connectors2}    •    Clips: ${clips - 3}`, x, y + h * 1.8)
-  } else {
-    text(`180Corner: ${connectors2}    •    Clips: ${clips}`, x, y + h * 1.8)
+  function sub() {
+    p.setVal()
+    p.result = p.a - p.b
+    p.para.html(p.result)
   }
 
-  // Long modules 3m - less cuts
-  module10Num = Math.floor(profileLength / max3m)
-  shortBruto = (profileLength - max3m * module10Num)
-  unitsAmount = Math.floor(shortBruto / moduleLength)
-
-  for (let i = 0; i < module10Num; i++) {
-    textSize(1 * sliderLength)
-
-    push()
-    stroke(0)
-    fill(71, 115, 137)
-    let modL = rect(i * (sliderLength * 10) + pan.value(), y - h, sliderLength * 8, h)
-    pop()
-
-    noStroke()
-    fill(0, 0, 0)
-    text(`${i+1}
-		224`, i * (sliderLength * 10) + pan.value() + 4, y - h + 20);
-
-    push()
-    stroke(0)
-    fill(237, 255, 171)
-    let modc = rect((i * (sliderLength * 10) + pan.value()) + (sliderLength * 8), y - h, sliderLength * 2, h)
-    pop()
-
-    text(`${i+1}
-56`, (i * (sliderLength * 10) + pan.value()) + (sliderLength * 8) + 4, y - h + 20)
+  function mul() {
+    p.setVal()
+    p.result = p.a * p.b
+    p.para.html(p.result)
   }
 
-  // Rest modules 3m - less cuts
-  stroke(0)
-  let xx = (sliderLength * 10 * module10Num) + pan.value()
-  switch (unitsAmount) {
-    case 9:
-      fill(106, 154, 178)
-      shortMod = rect(xx, y - h, 6 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	168`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-
-      stroke(0)
-      fill(211, 249, 175)
-      shortMod = rect(xx + 6 * sliderLength, y - h, 3 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	84`, xx + 6 * sliderLength + 4, y - h + 20)
-      break
-
-    case 8:
-      fill(71, 115, 137)
-      shortMod = rect(xx, y - h, 8 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	224`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 7:
-      fill(162, 227, 193)
-      shortMod = rect(xx, y - h, 4 * sliderLength, h)
-
-      push()
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	112`, xx + 4, y - h + 20)
-      pop()
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-
-      fill(211, 249, 175)
-      shortMod = rect(xx + 4 * sliderLength, y - h, 3 * sliderLength, h)
-
-      push()
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	84`, xx + 4 * sliderLength + 4, y - h + 20)
-      pop()
-      break
-
-    case 6:
-      fill(106, 154, 178)
-      shortMod = rect(xx, y - h, 6 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	168`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 5:
-      fill(123, 201, 212)
-      shortMod = rect(xx, y - h, 5 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	140`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 4:
-      fill(162, 227, 193)
-      shortMod = rect(xx, y - h, 4 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	112`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 3:
-      fill(211, 249, 175)
-      shortMod = rect(xx, y - h, 3 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	84`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 2:
-      fill(237, 255, 171)
-      shortMod = rect(xx, y - h, 2 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-56`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        push()
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
-
-    case 1:
-      push()
-      stroke(0)
-      fill(211, 249, 175)
-      translate(-(sliderLength * 2), 0)
-      shortMod = rect(xx, y - h, 3 * sliderLength, h)
-
-      noStroke()
-      fill(0, 0, 0)
-      text(`1
-	84`, xx + 4, y - h + 20)
-
-      if (profileLength >= 2800) {
-        strokeWeight(4)
-        stroke(255, 255, 255)
-        connector = line(xx, y - h * .666, xx, y - h / 3.5)
-        pop()
-      }
-      break
+  function div() {
+    p.setVal()
+    p.result = p.a / p.b
+    p.para.html(p.result)
   }
 
-  // units
-  noFill()
-  stroke(0)
-  unitsBar = rect(x + pan.value(), y, totalLength / shrink.value(), h / 2)
-
-  // single modules
-  fill(100)
-  for (let i = 0; i < modulesNum(); i++) {
-    singleModule = rect(i * sliderLength + pan.value(), y, sliderLength, h / 2)
+  // WINDOW RESIZED
+  p.windowResized = function() {
+    p.resizeCanvas(p.windowWidth, 350)
   }
 
-  // Long modules 3m - less price
-  mod8Num = Math.floor(modulesNum() / 8)
-  for (let i = 0; i < mod8Num; i++) {
-    push()
-    fill(71, 115, 137)
-    stroke(0)
-    let mod8M = rect(i * sliderLength * 8 + pan.value(), y + h / 2, sliderLength * 8, h)
-    pop()
-
-    noStroke()
-    fill(0)
-    textSize(1 * sliderLength)
-    text(`${i+ 1}
-		224`, i * sliderLength * 8 + 4 + pan.value(), y + h - 10)
+  // Find total number of single modules
+  p.modulesNum = function() {
+    p.unitNum = p.totalLength / p.moduleLength
+    return p.int(p.unitNum)
   }
 
-  // Rest modules 3m - less price
-  let rest = modulesNum() - (mod8Num * 8)
-  let c
+  // DRAW
+  p.draw = function() {
+    p.background(51)
 
-  switch (rest) {
-    case 1:
-      push()
-      c = color('rgb(123,201,212)')
-      translate(-(sliderLength * 8), 0)
-      restModule = new Module(5, c, 140)
-      restModule.show()
-      c = color('rgb(162,227,193)')
-      translate(sliderLength * 5, 0)
-      restModule1 = new Module(4, c, 112)
-      restModule1.show()
-      pop()
-      break;
+    p.sliderLength = p.moduleLength / p.shrink.value()
+    p.totalLength = textBox.value()
 
-    case 2:
-      c = color('rgb(237,255,171)')
-      restModule = new Module(2, c, 56)
-      restModule.show()
-      break;
+    //texts
+    p.textSize(12)
+    p.fill(222)
+    p.noStroke()
+    p.text(`Total length: ${p.totalLength} mm`, p.x, 20)
+    p.profileLength = p.modulesNum() * 280
+    p.text(`Profile length: ${p.profileLength} mm`, p.x, 40)
 
-    case 3:
-      c = color('rgb(211,249,175)')
-      restModule = new Module(3, c, 84)
-      restModule.show()
-      break;
+    p.text(`Profile length with end caps: ${p.profileLength + 10} mm`, p.x, 60)
+    p.leftover = p.totalLength - p.profileLength
+    p.text(`Leftover: ${p.leftover} mm`, p.x, 80)
 
-    case 4:
-      c = color('rgb(162,227,193)')
-      restModule = new Module(4, c, 112)
-      restModule.show()
-      break;
-
-    case 5:
-      c = color('rgb(123,201,212)')
-      restModule = new Module(5, c, 140)
-      restModule.show()
-      break;
-
-    case 6:
-      c = color('rgb(106,154,178)')
-      restModule = new Module(6, c, 168)
-      restModule.show()
-      break;
-
-    case 7:
-      c = color('rgb(162,227,193)')
-      restModule = new Module(4, c, 112)
-      restModule.show()
-      push()
-      c = color('rgb(211,249,175)')
-      restModule1 = new Module(3, c, 84)
-      translate(sliderLength * 4, 0)
-      restModule1.show()
-      pop()
-      break;
-  }
-  // connectors lines 3m - less cuts
-  if (profileLength % max3m == 0) {
-    for (let i = 1; i <= connectors; i++) {
-      push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(i * sliderLength * 10 + pan.value(), y - h * .666, i * sliderLength * 10 + pan.value(), y - h / 3.5)
-      pop()
-    }
-  } else {
-    for (let i = 1; i < connectors; i++) {
-      push()
-      strokeWeight(4)
-      stroke(255, 255, 255)
-      connector = line(i * sliderLength * 10 + pan.value(), y - h * .666, i * sliderLength * 10 + pan.value(), y - h / 3.5)
-      pop()
-    }
-  }
-
-  // connectors lines 3m - less price
-  for (let i = 1; i <= connectors2; i++) {
-
-    push()
-    strokeWeight(4)
-    stroke(255, 255, 255)
-    connector = line(i * sliderLength * 8 + pan.value(), y + h * .8, i * sliderLength * 8 + pan.value(), y + h / .8)
-    pop()
-  }
-
-
-}
-
-
-
-class Module {
-  constructor(n, c, type) {
-    this.n = n
-    this.c = c
-    this.type = type
-    this.newX = sliderLength * 8 * mod8Num + pan.value()
-    let modNum = Math.floor(modulesNum() / this.n)
-  }
-
-  show() {
-    fill(this.c)
-    stroke(0)
-    let lastMod = rect(this.newX, y + h / 2, sliderLength * this.n, h)
-    fill(0, 0, 0)
-    noStroke()
-    if (this.type == 56) {
-      text(`1
-56`, this.newX + 4, y + h - 10)
+    // p.connectors 3m - less cuts
+    if (p.totalLength < 3080) {
+      p.connectors = 0
+    } else if (p.profileLength >= 3080 && p.profileLength < 5880) {
+      p.connectors = 1
+    } else if (p.profileLength % p.max3m == 0) {
+      p.connectors = Math.floor(p.profileLength / p.max3m) - 1
     } else {
-      text(`1
-	${this.type}`, this.newX + 4, y + h - 10);
+      p.connectors = Math.floor(p.profileLength / p.max3m)
+    }
+
+    // Suspension 3m - less cuts
+    if (p.modulesNum() >= 8) {
+      if (p.profileLength % p.max3m == 0) {
+        p.suspensions = p.module10Num * 3
+      } else if (p.profileLength % p.max3m >= 280 && p.profileLength % p.max3m <= 1960) {
+        p.suspensions = p.module10Num * 3 + 2
+      } else if (p.profileLength % p.max3m > 1960) {
+        p.suspensions = p.module10Num * 3 + 3
+      }
+    } else {
+      p.suspensions = 2
+    }
+
+    p.text(`180Corner: ${p.connectors}    •    suspensions: ${p.suspensions}`, p.x, p.y - p.h - 10)
+
+    // p.connectors 3m - less price
+    if (p.profileLength < 3080) {
+      p.connectors2 = 0
+    } else if (p.profileLength % 2240 == 0 || p.profileLength % 2240 == 280) {
+      p.connectors2 = p.mod8Num - 1
+    } else {
+      p.connectors2 = p.mod8Num
+    }
+
+    // ClipsTR
+    if (p.profileLength % 2240 == 0) {
+      p.clipsTR = p.mod8Num * 4
+    } else if (p.profileLength % 2240 == 280) {
+      p.clipsTR = p.mod8Num * 4 + 1
+    } else if (p.profileLength % 2240 >= 560 && p.profileLength % 2240 <= 1120) {
+      p.clipsTR = p.mod8Num * 4 + 2
+    } else if (p.profileLength % 2240 > 1120 && p.profileLength % 2240 < 1960) {
+      p.clipsTR = p.mod8Num * 4 + 3
+    } else if (p.profileLength % 2240 >= 1960) {
+      p.clipsTR = p.mod8Num * 4 + 4
+    }
+
+    // Clips
+    if (p.profileLength % 2240 == 0 && p.profileLength % 2240 <= 560) {
+      p.clips = p.mod8Num * 3
+    } else if (p.profileLength % 2240 > 560) {
+      p.clips = p.mod8Num * 3 + 2
+    }
+
+    p.text(`180Corner: ${p.connectors2}    •    SRL TR clips: ${p.clipsTR}    •    SRL 85 / MIC 60 clips: ${p.clips}`, p.x, p.y + p.h * 1.8)
+
+    // Long modules 3m - less cuts
+    p.module10Num = Math.floor(p.profileLength / p.max3m)
+    p.shortBruto = (p.profileLength - p.max3m * p.module10Num)
+    p.unitsAmount = Math.floor(p.shortBruto / p.moduleLength)
+
+    for (i = 0; i < p.module10Num; i++) {
+      p.textSize(1 * p.sliderLength)
+
+      p.push()
+      p.stroke(0)
+      p.fill(71, 115, 137)
+      p.modL = p.rect(i * (p.sliderLength * 10) + p.pan.value(), p.y - p.h, p.sliderLength * 8, p.h)
+      p.pop()
+
+      p.noStroke()
+      p.fill(0, 0, 0)
+      p.text(`${i+1}
+  224`, i * (p.sliderLength * 10) + p.pan.value() + 4, p.y - p.h + 20);
+
+      p.push()
+      p.stroke(0)
+      p.fill(237, 255, 171)
+      p.modc = p.rect((i * (p.sliderLength * 10) + p.pan.value()) + (p.sliderLength * 8), p.y - p.h, p.sliderLength * 2, p.h)
+      p.pop()
+
+      p.text(`${i+1}
+56`, (i * (p.sliderLength * 10) + p.pan.value()) + (p.sliderLength * 8) + 4, p.y - p.h + 20)
+    }
+
+    // Rest modules 3m - less cuts
+    p.stroke(0)
+    p.xx = (p.sliderLength * 10 * p.module10Num) + p.pan.value()
+    switch (p.unitsAmount) {
+      case 9:
+        p.fill(106, 154, 178)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 6 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  168`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 6 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  84`, p.xx + 6 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 8:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 7:
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.push()
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	112`, p.xx + 4, p.y - p.h + 20)
+        p.pop()
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 4 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.push()
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 4 * p.sliderLength + 4, p.y - p.h + 20)
+        p.pop()
+        break
+
+      case 6:
+        p.fill(106, 154, 178)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 6 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	168`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 5:
+        p.fill(123, 201, 212)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 5 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	140`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 4:
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	112`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 3:
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 2:
+        p.fill(237, 255, 171)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 2 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+56`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 1:
+        p.push()
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.translate(-(p.sliderLength * 2), 0)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800) {
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+    }
+
+    // units
+    p.noFill()
+    p.stroke(0)
+    p.unitsBar = p.rect(p.x + p.pan.value(), p.y, p.totalLength / p.shrink.value(), p.h / 2)
+
+    // single modules
+    p.fill(100)
+    for (i = 0; i < p.modulesNum(); i++) {
+      p.singleModule = p.rect(i * p.sliderLength + p.pan.value(), p.y, p.sliderLength, p.h / 2)
+    }
+
+    // Long modules 3m - less price
+    p.mod8Num = Math.floor(p.modulesNum() / 8)
+    for (i = 0; i < p.mod8Num; i++) {
+      p.push()
+      p.fill(71, 115, 137)
+      p.stroke(0)
+      mod8M = p.rect(i * p.sliderLength * 8 + p.pan.value(), p.y + p.h / 2, p.sliderLength * 8, p.h)
+      p.pop()
+
+      p.noStroke()
+      p.fill(0)
+      p.textSize(1 * p.sliderLength)
+      p.text(`${i+ 1}
+	224`, i * p.sliderLength * 8 + 4 + p.pan.value(), p.y + p.h - 10)
+    }
+
+    // Rest modules 3m - less price
+    p.rest = p.modulesNum() - (p.mod8Num * 8)
+    p.c
+
+    switch (p.rest) {
+      case 1:
+        p.push()
+        p.c = p.color('rgb(123,201,212)')
+        p.translate(-(p.sliderLength * 8), 0)
+        p.restModule = new Module(5, p.c, 140)
+        p.restModule.show()
+        p.c = p.color('rgb(162,227,193)')
+        p.translate(p.sliderLength * 5, 0)
+        p.restModule1 = new Module(4, p.c, 112)
+        p.restModule1.show()
+        p.pop()
+        break;
+
+      case 2:
+        p.c = p.color('rgb(237,255,171)')
+        p.restModule = new Module(2, p.c, 56)
+        p.restModule.show()
+        break;
+
+      case 3:
+        p.c = p.color('rgb(211,249,175)')
+        p.restModule = new Module(3, p.c, 84)
+        p.restModule.show()
+        break;
+
+      case 4:
+        p.c = p.color('rgb(162,227,193)')
+        p.restModule = new Module(4, p.c, 112)
+        p.restModule.show()
+        break;
+
+      case 5:
+        p.c = p.color('rgb(123,201,212)')
+        p.restModule = new Module(5, p.c, 140)
+        p.restModule.show()
+        break;
+
+      case 6:
+        p.c = p.color('rgb(106,154,178)')
+        p.restModule = new Module(6, p.c, 168)
+        p.restModule.show()
+        break;
+
+      case 7:
+        p.c = p.color('rgb(162,227,193)')
+        p.restModule = new Module(4, p.c, 112)
+        p.restModule.show()
+        p.push()
+        p.c = p.color('rgb(211,249,175)')
+        p.restModule1 = new Module(3, p.c, 84)
+        p.translate(p.sliderLength * 4, 0)
+        p.restModule1.show()
+        p.pop()
+        break;
+    }
+    // p.connectors lines 3m - less cuts
+    if (p.profileLength % p.max3m == 0) {
+      for (i = 1; i <= p.connectors; i++) {
+        p.push()
+        p.strokeWeight(4)
+        p.stroke(255, 255, 255)
+        p.connector = p.line(i * p.sliderLength * 10 + p.pan.value(), p.y - p.h * .666, i * p.sliderLength * 10 + p.pan.value(), p.y - p.h / 3.5)
+        p.pop()
+      }
+    } else {
+      for (i = 1; i < p.connectors; i++) {
+        p.push()
+        p.strokeWeight(4)
+        p.stroke(255, 255, 255)
+        p.connector = p.line(i * p.sliderLength * 10 + p.pan.value(), p.y - p.h * .666, i * p.sliderLength * 10 + p.pan.value(), p.y - p.h / 3.5)
+        p.pop()
+      }
+    }
+
+    // p.connectors lines 3m - less price
+    for (i = 1; i <= p.connectors2; i++) {
+
+      p.push()
+      p.strokeWeight(4)
+      p.stroke(255, 255, 255)
+      p.connector = p.line(i * p.sliderLength * 8 + p.pan.value(), p.y + p.h * .8, i * p.sliderLength * 8 + p.pan.value(), p.y + p.h / .8)
+      p.pop()
+    }
+  }
+
+
+
+  class Module {
+    constructor(n, c, type) {
+      this.n = n
+      this.c = c
+      this.type = type
+      this.newX = p.sliderLength * 8 * p.mod8Num + p.pan.value()
+      p.modNum = Math.floor(p.modulesNum() / this.n)
+    }
+
+    show() {
+      p.fill(this.c)
+      p.stroke(0)
+      p.lastMod = p.rect(this.newX, p.y + p.h / 2, p.sliderLength * this.n, p.h)
+      p.fill(0, 0, 0)
+      p.noStroke()
+      if (this.type == 56) {
+        p.text(`1
+56`, this.newX + 4, p.y + p.h - 10)
+      } else {
+        p.text(`1
+  ${this.type}`, this.newX + 4, p.y + p.h - 10);
+      }
     }
   }
 }
+
+
+
+
+
+
+
+
+
+// ================================================================================================================
+
+var sketch2 = function(p) {
+  // GLOBALS
+  p.canvas
+  p.unitsBar
+  p.totalLength
+  p.moduleLength = 280
+  p.singleModule
+  p.x = 0
+  p.y = 230
+  p.h = 55
+  p.mod8Num
+  p.restModule
+  p.textBox
+  p.shrink
+  p.pan
+
+  p.connectors
+  p.suspensions
+  p.clips
+
+  p.mod21Num
+  p.shortBruto
+  p.shortNet
+
+  p.max6m = 5880
+  p.unitsAmount
+  p.shortMod
+
+  p.a
+  p.b
+  p.result
+
+
+
+  //SETUP
+  p.setup = function() {
+    canvas = p.createCanvas(p.windowWidth, 350)
+    canvas.parent('#sketch2')
+    output = p.createP(' ')
+    // infos
+    textBox.attribute('placeholder', '15000')
+    textBox.attribute('oninput', 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength)')
+    textBox.attribute('type', 'number')
+    textBox.attribute('step', '280')
+    textBox.attribute('min', '0')
+    textBox.attribute('maxlength', '5')
+    textBox.attribute('id', 'focus')
+    document.getElementById("focus").autofocus = true
+    textBox.parent(topDiv)
+    p.insert = p.createElement('strong', 'insert distance')
+    p.insert.parent(topDiv)
+
+    // shrink
+    p.createElement('strong', 'shrink').parent('p6m')
+    p.shrink = p.createSlider(22, 100, 22).parent('p6m')
+
+    // pan
+    p.pan = p.createSlider(-1500, 0, 0).parent('p6m')
+    p.createElement('strong', 'pan').parent('p6m')
+  }
+
+
+
+  // WINDOW RESIZED
+  p.windowResized = function() {
+    p.resizeCanvas(p.windowWidth, 350)
+  }
+
+  // Find total number of single modules
+  p.modulesNum = function() {
+    p.unitNum = p.totalLength / p.moduleLength
+    return p.int(p.unitNum)
+  }
+
+  // DRAW
+  p.draw = function() {
+    p.background(51)
+
+    p.sliderLength = p.moduleLength / p.shrink.value()
+    p.totalLength = textBox.value()
+
+    //texts
+    p.textSize(12)
+    p.fill(222)
+    p.noStroke()
+    p.text(`Total length: ${p.totalLength} mm`, p.x, 20)
+    p.profileLength = p.modulesNum() * 280
+    p.text(`Profile length: ${p.profileLength} mm`, p.x, 40)
+
+    p.text(`Profile length with end caps: ${p.profileLength + 10} mm`, p.x, 60)
+    p.leftover = p.totalLength - p.profileLength
+    p.text(`Leftover: ${p.leftover} mm`, p.x, 80)
+
+    // p.connectors 6m - less cuts
+    if (p.totalLength > p.max6m) {
+      if (p.profileLength % p.max6m == 0) {
+        p.connectors = Math.floor(p.profileLength / p.max6m) - 1
+      } else {
+        p.connectors = Math.floor(p.profileLength / p.max6m)
+      }
+    } else {
+      p.connectors = 0
+    }
+
+    // Suspension 6m - less cuts
+    if (p.modulesNum() >= 8) {
+      if (p.profileLength % p.max6m == 0) {
+        p.suspensions = p.mod21Num * 4
+      } else if (p.profileLength % p.max6m >= 280 && p.profileLength % p.max6m <= 1960) {
+        p.suspensions = p.mod21Num * 4 + 2
+      } else if (p.profileLength % p.max6m > 1960 && p.profileLength % p.max6m < 4200) {
+        p.suspensions = p.mod21Num * 4 + 3
+      } else {
+        p.suspensions = p.mod21Num * 4 + 4
+      }
+    } else {
+      p.suspensions = 2
+    }
+
+    p.text(`180Corner: ${p.connectors}    •    suspensions: ${p.suspensions}`, p.x, p.y - p.h - 10)
+
+    // p.connectors 6m - less price
+    if (p.profileLength < 6160) {
+      p.connectors2 = 0
+    } else if (p.profileLength % 4480 == 0 || p.profileLength % 4480 == 280) {
+      p.connectors2 = p.mod8Num / 2 - 1
+    } else {
+      p.connectors2 = Math.floor(p.mod8Num / 2)
+    }
+
+    // ClipsTR
+    if (p.profileLength % 2240 == 0) {
+      p.clipsTR = p.mod8Num * 4
+    } else if (p.profileLength % 2240 == 280) {
+      p.clipsTR = p.mod8Num * 4 + 1
+    } else if (p.profileLength % 2240 >= 560 && p.profileLength % 2240 <= 1120) {
+      p.clipsTR = p.mod8Num * 4 + 2
+    } else if (p.profileLength % 2240 > 1120 && p.profileLength % 2240 < 1960) {
+      p.clipsTR = p.mod8Num * 4 + 3
+    } else if (p.profileLength % 2240 >= 1960) {
+      p.clipsTR = p.mod8Num * 4 + 4
+    }
+
+    // Clips
+    p.mod16Num = Math.floor(p.profileLength / (p.moduleLength * 16))
+    if (p.profileLength > 5880) {
+      if (p.profileLength % 4480 == 0 || p.profileLength % 4480 == 280) {
+        p.clips = p.mod16Num * 4
+      } else if (p.profileLength % 4480 > 280 && p.profileLength % 4480 < 2240) {
+        p.clips = p.mod16Num * 4 + 2
+      } else if (p.profileLength % 2240 == 1960) {
+        p.clips = p.mod16Num * 4 + 4
+      } else {
+        p.clips = p.mod16Num * 4 + 3
+      }
+    } else {
+      p.clips = 4
+    }
+
+    p.text(`180Corner: ${p.connectors2}    •    SRL TR clips: ${p.clipsTR}    •    SRL 85 / MIC 60 clips: ${p.clips}`, p.x, p.y + p.h * 1.8)
+
+    // Long modules 6m - less cuts
+    p.mod21Num = Math.floor(p.profileLength / p.max6m)
+    p.shortBruto = (p.profileLength - p.max6m * p.mod21Num)
+    p.unitsAmount = Math.floor(p.shortBruto / p.moduleLength)
+
+    for (i = 0; i < p.mod21Num; i++) {
+      p.textSize(1 * p.sliderLength)
+
+      p.push()
+      p.stroke(0)
+      p.fill(71, 115, 137)
+      p.modL = p.rect(i * (p.sliderLength * 21) + p.pan.value(), p.y - p.h, p.sliderLength * 8, p.h)
+      p.pop()
+
+      p.noStroke()
+      p.fill(0, 0, 0)
+      p.text(`${i+1}
+	224`, i * (p.sliderLength * 21) + p.pan.value() + 4, p.y - p.h + 20);
+
+      p.push()
+      p.stroke(0)
+      p.fill(71, 115, 137)
+      p.modc = p.rect((i * (p.sliderLength * 21) + p.pan.value()) + (p.sliderLength * 8), p.y - p.h, p.sliderLength * 8, p.h)
+      p.pop()
+
+      p.text(`${i+1}
+  224`, (i * (p.sliderLength * 21) + p.pan.value()) + (p.sliderLength * 8) + 4, p.y - p.h + 20)
+
+      p.push()
+      p.stroke(0)
+      p.fill(123, 201, 212)
+      p.modc = p.rect((i * (p.sliderLength * 21) + p.pan.value()) + (p.sliderLength * 16), p.y - p.h, p.sliderLength * 5, p.h)
+      p.pop()
+
+      p.text(`${i+1}
+  140`, (i * (p.sliderLength * 21) + p.pan.value()) + (p.sliderLength * 16) + 4, p.y - p.h + 20)
+    }
+
+    // Rest modules 6m - less cuts
+    p.stroke(0)
+    p.xx = (p.sliderLength * 21 * p.mod21Num) + p.pan.value()
+    switch (p.unitsAmount) {
+
+      case 20:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx + 16 * p.sliderLength, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 16 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 19:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 16 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  84`, p.xx + 16 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 18:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(237, 255, 171)
+        p.shortMod = p.rect(p.xx + 16 * p.sliderLength, p.y - p.h, 2 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+56`, p.xx + 16 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 17:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(123, 201, 212)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 5 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  140`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx + 13 * p.sliderLength, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 13 * p.sliderLength + 4, p.y - p.h + 20)
+
+        break
+
+      case 16:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 15:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 12 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  84`, p.xx + 12 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 14:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(106, 154, 178)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 6 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  168`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 13:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(123, 201, 212)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 5 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  140`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 12:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+
+
+      case 11:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 8 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 8 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 10:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.push()
+        p.translate(8 * p.sliderLength, 0)
+        p.stroke(0)
+        p.fill(237, 255, 171)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 2 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+56`, p.xx + 4, p.y - p.h + 20)
+        p.pop()
+        break
+
+      case 9:
+        p.fill(106, 154, 178)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 6 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  168`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 6 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  84`, p.xx + 6 * p.sliderLength + 4, p.y - p.h + 20)
+        break
+
+      case 8:
+        p.fill(71, 115, 137)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 8 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  224`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 7:
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.push()
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 4, p.y - p.h + 20)
+        p.pop()
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx + 4 * p.sliderLength, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.push()
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 4 * p.sliderLength + 4, p.y - p.h + 20)
+        p.pop()
+        break
+
+      case 6:
+        p.fill(106, 154, 178)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 6 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	168`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 5:
+        p.fill(123, 201, 212)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 5 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	140`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 4:
+        p.fill(162, 227, 193)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	112`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 3:
+        p.fill(211, 249, 175)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 3 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+	84`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 2:
+        p.fill(237, 255, 171)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 2 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+56`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.push()
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+
+      case 1:
+        p.push()
+        p.stroke(0)
+        p.fill(162, 227, 193)
+        p.translate(-(p.sliderLength * 5), 0)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 4 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+  112`, p.xx + 4, p.y - p.h + 20)
+
+        p.stroke(0)
+        p.fill(211, 249, 175)
+        p.translate(p.sliderLength * 4, 0)
+        p.shortMod = p.rect(p.xx, p.y - p.h, 2 * p.sliderLength, p.h)
+
+        p.noStroke()
+        p.fill(0, 0, 0)
+        p.text(`1
+56`, p.xx + 4, p.y - p.h + 20)
+
+        if (p.profileLength >= 2800 && p.connectors > 0) {
+          p.strokeWeight(4)
+          p.stroke(255, 255, 255)
+          p.connector = p.line(p.xx, p.y - p.h * .666, p.xx, p.y - p.h / 3.5)
+          p.pop()
+        }
+        break
+    }
+
+    // units
+    p.noFill()
+    p.stroke(0)
+    p.unitsBar = p.rect(p.x + p.pan.value(), p.y, p.totalLength / p.shrink.value(), p.h / 2)
+
+    // single modules
+    p.fill(100)
+    for (i = 0; i < p.modulesNum(); i++) {
+      p.singleModule = p.rect(i * p.sliderLength + p.pan.value(), p.y, p.sliderLength, p.h / 2)
+    }
+
+    // Long modules 6m - less price
+    p.mod8Num = Math.floor(p.modulesNum() / 8)
+    for (i = 0; i < p.mod8Num; i++) {
+      p.push()
+      p.fill(71, 115, 137)
+      p.stroke(0)
+      mod8M = p.rect(i * p.sliderLength * 8 + p.pan.value(), p.y + p.h / 2, p.sliderLength * 8, p.h)
+      p.pop()
+
+      p.noStroke()
+      p.fill(0)
+      p.textSize(1 * p.sliderLength)
+      p.text(`${i+ 1}
+  224`, i * p.sliderLength * 8 + 4 + p.pan.value(), p.y + p.h - 10)
+    }
+
+    // Rest modules 6m - less price
+    p.rest = p.modulesNum() - (p.mod8Num * 8)
+    p.c
+
+    switch (p.rest) {
+      case 1:
+        p.push()
+        p.c = p.color('rgb(123,201,212)')
+        p.translate(-(p.sliderLength * 8), 0)
+        p.restModule = new Module(5, p.c, 140)
+        p.restModule.show()
+        p.c = p.color('rgb(162,227,193)')
+        p.translate(p.sliderLength * 5, 0)
+        p.restModule1 = new Module(4, p.c, 112)
+        p.restModule1.show()
+        p.pop()
+        break;
+
+      case 2:
+        p.c = p.color('rgb(237,255,171)')
+        p.restModule = new Module(2, p.c, 56)
+        p.restModule.show()
+        break;
+
+      case 3:
+        p.c = p.color('rgb(211,249,175)')
+        p.restModule = new Module(3, p.c, 84)
+        p.restModule.show()
+        break;
+
+      case 4:
+        p.c = p.color('rgb(162,227,193)')
+        p.restModule = new Module(4, p.c, 112)
+        p.restModule.show()
+        break;
+
+      case 5:
+        p.c = p.color('rgb(123,201,212)')
+        p.restModule = new Module(5, p.c, 140)
+        p.restModule.show()
+        break;
+
+      case 6:
+        p.c = p.color('rgb(106,154,178)')
+        p.restModule = new Module(6, p.c, 168)
+        p.restModule.show()
+        break;
+
+      case 7:
+        p.c = p.color('rgb(162,227,193)')
+        p.restModule = new Module(4, p.c, 112)
+        p.restModule.show()
+        p.push()
+        p.c = p.color('rgb(211,249,175)')
+        p.restModule1 = new Module(3, p.c, 84)
+        p.translate(p.sliderLength * 4, 0)
+        p.restModule1.show()
+        p.pop()
+        break;
+    }
+    // p.connectors lines 6m - less cuts
+    if (p.profileLength % p.max6m == 0) {
+      for (i = 1; i <= p.connectors; i++) {
+        p.push()
+        p.strokeWeight(4)
+        p.stroke(255, 255, 255)
+        p.connector = p.line(i * p.sliderLength * 21 + p.pan.value(), p.y - p.h * .666, i * p.sliderLength * 21 + p.pan.value(), p.y - p.h / 3.5)
+        p.pop()
+      }
+    } else {
+      for (i = 1; i < p.connectors; i++) {
+        p.push()
+        p.strokeWeight(4)
+        p.stroke(255, 255, 255)
+        p.connector = p.line(i * p.sliderLength * 21 + p.pan.value(), p.y - p.h * .666, i * p.sliderLength * 21 + p.pan.value(), p.y - p.h / 3.5)
+        p.pop()
+      }
+    }
+
+    // p.connectors lines 6m - less price
+    for (i = 1; i <= p.connectors2; i++) {
+
+      p.push()
+      p.strokeWeight(4)
+      p.stroke(255, 255, 255)
+      p.connector = p.line(i * p.sliderLength * 16 + p.pan.value(), p.y + p.h * .8, i * p.sliderLength * 16 + p.pan.value(), p.y + p.h / .8)
+      p.pop()
+    }
+
+
+  }
+
+
+
+  class Module {
+    constructor(n, c, type) {
+      this.n = n
+      this.c = c
+      this.type = type
+      this.newX = p.sliderLength * 8 * p.mod8Num + p.pan.value()
+      p.modNum = Math.floor(p.modulesNum() / this.n)
+    }
+
+    show() {
+      p.fill(this.c)
+      p.stroke(0)
+      p.lastMod = p.rect(this.newX, p.y + p.h / 2, p.sliderLength * this.n, p.h)
+      p.fill(0, 0, 0)
+      p.noStroke()
+      if (this.type == 56) {
+        p.text(`1
+56`, this.newX + 4, p.y + p.h - 10)
+      } else {
+        p.text(`1
+	${this.type}`, this.newX + 4, p.y + p.h - 10);
+      }
+    }
+  }
+}
+
+var myFirstSketch1 = new p5(sketch1);
+var myFirstSketch2 = new p5(sketch2);
